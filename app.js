@@ -7,14 +7,11 @@ const _ = require("lodash");
 
 const app = express();
 
-const items = ["Buy Food", "Cook Food", "Eat Food"];
-const workItems = [];
-
 app.set('view engine', 'ejs');
 
-mongoose.connect("mongodb://localhost:27017/todolistDB", {
-  useNewUrlParser: true
-});
+mongoose.connect("mongodb+srv://admin-hong:83499658inH#@cluster0-jdbga.mongodb.net/todolistDB", {useNewUrlParser: true});
+mongoose.connect('mongodb://localhost:27017/todolistDB', {useNewUrlParser: true});
+
 
 const itemsSchema = {
   name: String
@@ -112,7 +109,9 @@ app.post("/", function(req, res) {
     item.save();
     res.redirect("/");
   } else {
-    List.findOne({name: listName}, function(err, results) {
+    List.findOne({
+      name: listName
+    }, function(err, results) {
       results.items.push(item);
       results.save();
       res.redirect("/" + listName);
@@ -137,10 +136,18 @@ app.post("/delete", function(req, res) {
       }
     });
   } else {
-    List.findOneAndUpdate( {name: listName}, {$pull: {items: {_id: checkedItemId}}}, function(err, results) {
-        if (!err) {
-          res.redirect("/" + listName);
+    List.findOneAndUpdate({
+      name: listName
+    }, {
+      $pull: {
+        items: {
+          _id: checkedItemId
         }
+      }
+    }, function(err, results) {
+      if (!err) {
+        res.redirect("/" + listName);
+      }
     });
   }
 
